@@ -73,31 +73,33 @@ func printStatus(rows []StatusRow) {
 		return
 	}
 
+	// Column widths
 	const (
 		colSkill = 18
 		colHours = 8
 		colLevel = 22
-		colNext  = 10
-		colPct   = 8
+		colNextH = 14
+		colPct   = 9
 	)
 
-	title := cBold + cBlue + "Skill Progress (toward 10k)" + cReset
-	sep := strings.Repeat("─", colSkill+2+colHours+2+colLevel+2+colNext+2+colPct+10)
+	title := cBold + cBlue + "Skill Progress (to next milestone)" + cReset
+	sep := strings.Repeat("─", colSkill+2+colHours+2+colLevel+2+colNextH+2+colPct+8)
 	fmt.Println(title)
 	fmt.Println(sep)
 
+	// Header
 	hSkill := padANSI(cDim+"Skill"+cReset, colSkill)
 	hHours := padANSI(cDim+"Hours"+cReset, colHours)
 	hLevel := padANSI(cDim+"Level"+cReset, colLevel)
-	hNext := padANSI(cDim+"→ Next"+cReset, colNext)
-	hPct := cDim + "% of 10k" + cReset
-	fmt.Printf("%s  %s  %s  %s  %s\n", hSkill, hHours, hLevel, hNext, hPct)
+	hNextH := padANSI(cDim+"Hours→Next"+cReset, colNextH)
+	hPct := padANSI(cDim+"%→Next"+cReset, colPct)
+	fmt.Printf("%s  %s  %s  %s  %s\n", hSkill, hHours, hLevel, hNextH, hPct)
 	fmt.Println(sep)
 
 	for _, r := range rows {
-		next := "—"
+		nextH := "—"
 		if r.HoursUntilNextLevel > 0 {
-			next = fmt.Sprintf("%.2fh", r.HoursUntilNextLevel)
+			nextH = fmt.Sprintf("%.2f", r.HoursUntilNextLevel)
 		}
 
 		levelColor := colorForLevel(r.Level)
@@ -106,10 +108,10 @@ func printStatus(rows []StatusRow) {
 		skillCell := padANSI(r.Name, colSkill)
 		hoursCell := padANSI(fmt.Sprintf("%.2f", r.Hours), colHours)
 		levelCell := padANSI(level, colLevel)
-		nextCell := padANSI(next, colNext)
-		pctCell := fmt.Sprintf("%6.2f%%", r.PctTo10k)
+		nextHCell := padANSI(nextH, colNextH)
+		pctCell := padANSI(fmt.Sprintf("%6.2f%%", r.PctToNext), colPct)
 
-		fmt.Printf("%s  %s  %s  %s  %s\n", skillCell, hoursCell, levelCell, nextCell, pctCell)
+		fmt.Printf("%s  %s  %s  %s  %s\n", skillCell, hoursCell, levelCell, nextHCell, pctCell)
 	}
 
 	fmt.Println(sep)

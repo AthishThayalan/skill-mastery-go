@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"sort"
 	"strconv"
 	"strings"
 )
@@ -15,14 +16,49 @@ func computeRows(db *DB) []StatusRow {
 	for skillName, mins := range db.Skills {
 		hours := float64(mins) / 60.0
 
-		nextHours, nextLabel := nextMilestone(hours)
+		var upper float64
+		var nextLabel string
+		var lower float64 = 0
+
+		foundNext := false
+		for i, m := range Milestones {
+			if hours < m.Hours {
+				upper = m.Hours
+				nextLabel = m.Label
+				if i > 0 {
+					lower = Milestones[i-1].Hours
+				}
+				foundNext = true
+				break
+			}
+		}
+
 		var hrsToNext float64
-		if nextLabel != "" && nextHours > hours {
-			hrsToNext = nextHours - hours
+		if foundNext {
+			hrsToNext = upper - hours
+		} else {
+			hrsToNext = 0
+		}
+
+		var pctToNext float64
+		if foundNext {
+			span := upper - lower
+			if span <= 0 {
+				pctToNext = 0
+			} else {
+				pctToNext = ((hours - lower) / span) * 100.0
+				if pctToNext < 0 {
+					pctToNext = 0
+				}
+				if pctToNext > 100 {
+					pctToNext = 100
+				}
+			}
+		} else {
+			pctToNext = 100
 		}
 
 		level := computeLevel(hours)
-		pct := pctTo(hours)
 
 		rows = append(rows, StatusRow{
 			Name:                skillName,
@@ -30,9 +66,11 @@ func computeRows(db *DB) []StatusRow {
 			Level:               level,
 			HoursUntilNextLevel: hrsToNext,
 			NextLabel:           nextLabel,
-			PctTo10k:            pct,
+			PctToNext:           pctToNext,
 		})
 	}
+
+	sort.Slice(rows, func(i, j int) bool { return strings.ToLower(rows[i].Name) < strings.ToLower(rows[j].Name) })
 
 	return rows
 }

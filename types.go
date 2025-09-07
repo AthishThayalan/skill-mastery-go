@@ -12,7 +12,7 @@ type StatusRow struct {
 	Level               string
 	HoursUntilNextLevel float64
 	NextLabel           string
-	PctTo10k            float64
+	PctToNext           float64
 }
 
 type Milestone struct {
