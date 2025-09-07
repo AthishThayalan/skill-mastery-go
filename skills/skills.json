@@ -1,16 +1,16 @@
 {
- "version": 1,
- "updatedAt": "2025-09-07T10:15:00Z",
- "skills": {
-  "Chess": 115200,
-  "Cooking": 300,
-  "Drawing": 7200,
-  "French": 60,
-  "Go": 9420,
-  "Photography": 315000,
-  "Piano": 7425,
-  "Programming": 720000,
-  "Public Speaking": 65000,
-  "Writing": 10234
- }
+  "version": 1,
+  "updatedAt": "2025-09-07T15:45:00Z",
+  "skills": {
+    "Go": 120,
+    "Piano": 7200,
+    "Writing": 60000,
+    "Guitar": 120000,
+    "Chess": 300000,
+    "Photography": 600000,
+    "Running": 1200000,
+    "Cooking": 45,
+    "Public Speaking": 18000,
+    "Drawing": 240000
+  }
 }

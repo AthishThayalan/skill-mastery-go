@@ -18,6 +18,21 @@ const (
 	cGrey   = "\033[90m"
 )
 
+var skillColors = []string{
+	"\033[31m", // Red
+	"\033[32m", // Green
+	"\033[33m", // Yellow
+	"\033[34m", // Blue
+	"\033[35m", // Magenta
+	"\033[36m", // Cyan
+	"\033[91m", // Bright Red
+	"\033[92m", // Bright Green
+	"\033[93m", // Bright Yellow
+	"\033[94m", // Bright Blue
+	"\033[95m", // Bright Magenta
+	"\033[96m", // Bright Cyan
+}
+
 func colorForLevel(level string) string {
 	switch level {
 	case "Getting Started":
@@ -67,6 +82,15 @@ func padANSI(s string, width int) string {
 	return s + strings.Repeat(" ", width-vis)
 }
 
+func colorForSkill(name string) string {
+	// simple hash of skill name
+	sum := 0
+	for _, ch := range name {
+		sum += int(ch)
+	}
+	return skillColors[sum%len(skillColors)]
+}
+
 func printStatus(rows []StatusRow) {
 	if len(rows) == 0 {
 		fmt.Println("No skills tracked yet. Add your first one.")
@@ -105,7 +129,8 @@ func printStatus(rows []StatusRow) {
 		levelColor := colorForLevel(r.Level)
 		level := levelColor + r.Level + cReset
 
-		skillCell := padANSI(r.Name, colSkill)
+		coloredSkill := colorForSkill(r.Name) + r.Name + cReset
+		skillCell := padANSI(coloredSkill, colSkill)
 		hoursCell := padANSI(fmt.Sprintf("%.2f", r.Hours), colHours)
 		levelCell := padANSI(level, colLevel)
 		nextHCell := padANSI(nextH, colNextH)
