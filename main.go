@@ -1,12 +1,12 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 )
-
-const dbDir = ".skills"
-const dbFile = "skills.json"
 
 type DB struct {
 	Version   int            `json:"version"`
@@ -26,11 +26,6 @@ type Milestone struct {
 	Hours float64
 	Label string
 }
-
-const (
-	dbDirName  = ".skills"
-	dbFileName = "skills.json"
-)
 
 var Milestones = []Milestone{
 	{Hours: 100, Label: "Not bad"},
@@ -56,7 +51,25 @@ func computeRows(db *DB) []StatusRow {
 	return rows
 }
 
+func loadFile() ([]byte, error) {
+	path := filepath.Join("skills", "skills.json")
+	return os.ReadFile(path)
+}
+
 func main() {
+	data, err := loadFile()
+
+	if err != nil {
+		panic(err)
+	}
+
+	var db DB
+	if err := json.Unmarshal(data, &db); err != nil {
+		panic(err)
+	}
+
+	rows := computeRows(&db)
+	printStatus(rows)
 
 }
 
@@ -96,10 +109,13 @@ func pctTo(hours float64) float64 {
 }
 
 func computeLevel(hours float64) string {
-	if hours > 100 {
-		return Milestones[0].Label
+	if hours < 100 {
+		return "Getting Started"
 	}
 	for i, _ := range Milestones {
+		if i == 0 {
+			continue
+		}
 		if hours < Milestones[i].Hours {
 			return Milestones[i-1].Label
 		}
